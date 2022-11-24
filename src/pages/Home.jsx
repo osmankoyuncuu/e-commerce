@@ -5,30 +5,34 @@ import { getProduct } from "../features/productSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Grid from "@mui/material/Grid";
+import CategoryFilter from "../component/CategoryFilter";
 
 const Home = () => {
-  const { productList } = useSelector((state) => state.product);
+  const { filterProductList } = useSelector((state) => state.product);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getProduct());
   }, [dispatch]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Grid container justifyContent="center" spacing={4} sx={{ m: 1 }}>
-        {productList?.map((product) => (
-          <Grid item key={product?.id}>
-            <ProductCard product={product} />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    <>
+      <CategoryFilter />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Grid container justifyContent="center" spacing={4} sx={{ m: 1 }}>
+          {filterProductList?.map((product) => (
+            <Grid item key={product?.id}>
+              <ProductCard product={product} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </>
   );
 };
 

@@ -16,6 +16,8 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -60,9 +62,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
-
+  const navigate = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const { favoriteList } = useSelector((state) => state.favorite);
+  const { shoppingList } = useSelector((state) => state.shopping);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -163,7 +167,8 @@ const Navbar = () => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: "none", sm: "block", cursor: "pointer" } }}
+            onClick={() => navigate("/")}
           >
             E-Commence
           </Typography>
@@ -192,19 +197,19 @@ const Navbar = () => {
             </IconButton>
             <IconButton
               size="large"
-              aria-label="show 4 new mails"
               color="inherit"
+              onClick={() => navigate("/favorite")}
             >
-              <Badge badgeContent={4} color="error">
+              <Badge badgeContent={favoriteList.length} color="error">
                 <FavoriteIcon />
               </Badge>
             </IconButton>
             <IconButton
               size="large"
-              aria-label="show 17 new notifications"
               color="inherit"
+              onClick={() => navigate("/shopping")}
             >
-              <Badge badgeContent={17} color="error">
+              <Badge badgeContent={shoppingList.length} color="error">
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>

@@ -8,19 +8,47 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Box from "@mui/material/Box";
 import "../App.css";
+import { useSelector, useDispatch } from "react-redux";
+import { addFavorite, deleteFavorite } from "../features/favoriteSlice";
+import { useNavigate } from "react-router-dom";
+import { addShopping, deleteShopping } from "../features/shoppingSlice";
 
 const ProductCard = ({ product }) => {
-  const { title, image, price } = product;
+  const { favoriteList } = useSelector((state) => state.favorite);
+  const { shoppingList } = useSelector((state) => state.shopping);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { title, image, price, id, category } = product;
+  const includes = (arr, val) => {
+    return arr.some((arrVal) => val === arrVal.id);
+  };
+  const handleFavorite = (product) => {
+    if (includes(favoriteList, id)) {
+      dispatch(deleteFavorite(product));
+    } else {
+      dispatch(addFavorite(product));
+    }
+  };
+
+  const handleShopping = (product) => {
+    if (includes(shoppingList, id)) {
+      dispatch(deleteShopping(product));
+    } else {
+      dispatch(addShopping(product));
+    }
+  };
+
   return (
     <Card
       sx={{
-        width: "300px",
+        width: "250px",
         height: "525px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
         border: "1px solid #c1c1c1",
+        borderRadius: "0.5rem",
       }}
     >
       <Box
@@ -46,7 +74,8 @@ const ProductCard = ({ product }) => {
         alt={title}
         height="300"
         image={image}
-        sx={{ position: "cover", padding: "0 0.5rem" }}
+        sx={{ position: "cover", padding: "0 0.5rem", cursor: "pointer" }}
+        onClick={() => navigate(`/detail/${id}`, { state: category })}
       />
       <CardContent>
         <Typography
@@ -64,19 +93,31 @@ const ProductCard = ({ product }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <IconButton size="large" aria-haspopup="true" color="inherit">
+        <IconButton
+          size="large"
+          aria-haspopup="true"
+          color="inherit"
+          onClick={() => handleFavorite(product)}
+        >
           <FavoriteIcon
             sx={{
               "&:hover": { color: "primary.main" },
               transition: "all .2s",
+              color: `${includes(favoriteList, id) && "primary.main"}`,
             }}
           />
         </IconButton>
-        <IconButton size="large" aria-haspopup="true" color="inherit">
+        <IconButton
+          size="large"
+          aria-haspopup="true"
+          color="inherit"
+          onClick={() => handleShopping(product)}
+        >
           <AddShoppingCartIcon
             sx={{
               "&:hover": { color: "primary.main" },
               transition: "all .2s",
+              color: `${includes(shoppingList, id) && "primary.main"}`,
             }}
           />
         </IconButton>

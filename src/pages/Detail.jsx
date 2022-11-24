@@ -2,34 +2,58 @@ import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import Button from "@mui/material/Button";
 import OtherProductCard from "../component/OtherProductCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, deleteFavorite } from "../features/favoriteSlice";
+import { addShopping, deleteShopping } from "../features/shoppingSlice";
 
 const Detail = () => {
   const { id } = useParams();
+  const { state: category } = useLocation();
   const [detail, setDetail] = useState("");
+  const [otherCard, setOtherCard] = useState([]);
   const { productList } = useSelector((state) => state.product);
+  const { favoriteList } = useSelector((state) => state.favorite);
+  const { shoppingList } = useSelector((state) => state.shopping);
+  const dispatch = useDispatch();
+
   const getDetail = async (id) => {
     const url = `https://fakestoreapi.com/products/${id}`;
     const { data } = await axios(url);
     setDetail(data);
   };
-  const { title, price, description, category, image, rating } = detail;
+  const { title, price, description, image, rating } = detail;
 
   const getOtherCategoryCard = () => {
-    const otherFilter = productList.filter((item) =>
-      console.log(item.category == category)
+    const otherFilter = productList.filter(
+      (item) => item.category === category && item.id != id
     );
-    console.log(otherFilter);
+    setOtherCard(otherFilter);
+  };
+
+  const handleFavorite = (product) => {
+    if (favoriteList?.some((item) => item.id == id)) {
+      dispatch(deleteFavorite(product));
+    } else {
+      dispatch(addFavorite(product));
+    }
+  };
+
+  const handleShopping = (product) => {
+    if (shoppingList?.some((item) => item.id == id)) {
+      dispatch(deleteShopping(product));
+    } else {
+      dispatch(addShopping(product));
+    }
   };
 
   useEffect(() => {
     getDetail(id);
     getOtherCategoryCard();
-  }, []);
+  }, [id]);
 
   return (
     <Box
@@ -85,8 +109,12 @@ const Detail = () => {
             </Typography>
           </Box>
           <Box sx={{ display: "flex", gap: "1rem", mt: 2 }}>
-            <Button variant="contained">Add to Favorite</Button>
-            <Button variant="contained">Add to basket</Button>
+            <Button variant="contained" onClick={() => handleFavorite(detail)}>
+              Add to Favorite
+            </Button>
+            <Button variant="contained" onClick={() => handleShopping(detail)}>
+              Add to basket
+            </Button>
           </Box>
         </Box>
       </Box>
@@ -94,7 +122,13 @@ const Detail = () => {
         <Typography variant="h6">
           People who viewed this product also viewed these
         </Typography>
-        <OtherProductCard category={category} id={id} />
+        <Box
+          sx={{ display: "flex", gap: "1rem", mt: 3, justifyContent: "center" }}
+        >
+          {otherCard.map((item) => (
+            <OtherProductCard key={item.id} product={item} />
+          ))}
+        </Box>
       </Box>
     </Box>
   );
