@@ -1,7 +1,7 @@
 import AppRouter from "./router/AppRouter";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { deepOrange } from "@mui/material/colors";
+import { deepOrange, grey } from "@mui/material/colors";
 import { Provider } from "react-redux";
 import store from "./app/store";
 
@@ -10,6 +10,9 @@ const App = () => {
     palette: {
       primary: {
         main: deepOrange[500],
+      },
+      secondary: {
+        main: grey[500],
       },
     },
   });
