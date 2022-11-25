@@ -67,6 +67,7 @@ const Navbar = () => {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const { favoriteList } = useSelector((state) => state.favorite);
   const { shoppingList } = useSelector((state) => state.shopping);
+  const { currentUser } = useSelector((state) => state.auth);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -102,8 +103,35 @@ const Navbar = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {currentUser ? (
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            navigate("/profile");
+          }}
+        >
+          Profile
+        </MenuItem>
+      ) : (
+        <Box>
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              navigate("/login");
+            }}
+          >
+            Login
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              navigate("/register");
+            }}
+          >
+            Register
+          </MenuItem>
+        </Box>
+      )}
     </Menu>
   );
 
@@ -124,25 +152,21 @@ const Navbar = () => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
+      <MenuItem onClick={() => navigate("/shopping")}>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={shoppingList.length} color="error">
+            <ShoppingCartIcon />
           </Badge>
         </IconButton>
-        <p>Messages</p>
+        <p>My Cart</p>
       </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
+      <MenuItem onClick={() => navigate("/favorite")}>
+        <IconButton size="large" color="inherit">
+          <Badge badgeContent={favoriteList.length} color="error">
+            <FavoriteIcon />
           </Badge>
         </IconButton>
-        <p>Notifications</p>
+        <p>Favorite</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
