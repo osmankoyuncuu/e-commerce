@@ -10,14 +10,14 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { logOut } from "../utils/firebase";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -104,14 +104,24 @@ const Navbar = () => {
       onClose={handleMenuClose}
     >
       {currentUser ? (
-        <MenuItem
-          onClick={() => {
-            handleMenuClose();
-            navigate("/profile");
-          }}
-        >
-          Profile
-        </MenuItem>
+        <Box>
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              navigate("/profile");
+            }}
+          >
+            Profile
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              logOut();
+            }}
+          >
+            Logout
+          </MenuItem>
+        </Box>
       ) : (
         <Box>
           <MenuItem
@@ -168,24 +178,43 @@ const Navbar = () => {
         </IconButton>
         <p>Favorite</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+      {currentUser ? (
+        <Box>
+          <MenuItem onClick={() => navigate("/profile")}>
+            <IconButton size="large" color="inherit">
+              <AccountCircle />
+            </IconButton>
+            <p>Profile</p>
+          </MenuItem>
+          <MenuItem onClick={() => logOut()}>
+            <IconButton size="large" color="inherit">
+              <LogoutIcon />
+            </IconButton>
+            <p>Logout</p>
+          </MenuItem>
+        </Box>
+      ) : (
+        <Box>
+          <MenuItem onClick={() => navigate("/login")}>
+            <IconButton size="large" color="inherit">
+              <AccountCircle />
+            </IconButton>
+            <p>Login</p>
+          </MenuItem>
+          <MenuItem onClick={() => navigate("/register")}>
+            <IconButton size="large" color="inherit">
+              <AccountCircle />
+            </IconButton>
+            <p>Register</p>
+          </MenuItem>
+        </Box>
+      )}
     </Menu>
   );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <Typography
             variant="h6"
@@ -208,6 +237,10 @@ const Navbar = () => {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography>{currentUser?.displayName}</Typography>
+            </Box>
+
             <IconButton
               size="large"
               edge="end"
@@ -254,6 +287,7 @@ const Navbar = () => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <Box sx={{ height: "64px" }}></Box>
     </Box>
   );
 };

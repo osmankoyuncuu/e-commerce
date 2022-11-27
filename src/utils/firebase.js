@@ -19,7 +19,15 @@ import {
   addDoc,
   updateDoc,
   getDoc,
+  disableNetwork,
+  setDoc,
 } from "firebase/firestore";
+
+import {
+  toastErrorNotify,
+  toastSuccessNotify,
+  toastWarnNotify,
+} from "../utils/ToastNotify";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_apiKey,
@@ -36,7 +44,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 
-export const createUser = async (values, navigate, setLoading) => {
+export const createUser = async (values, navigate, dispatch, clearLoading) => {
   const { firstname, lastname, email, password } = values;
   const displayName = `${firstname} ${lastname}`;
   try {
@@ -48,42 +56,42 @@ export const createUser = async (values, navigate, setLoading) => {
     await updateProfile(auth.currentUser, {
       displayName: displayName,
     });
-    setLoading(false);
+    dispatch(clearLoading());
     navigate("/");
-    //toastSuccessNotify("Registered successfully!");
+    toastSuccessNotify("Registered successfully!");
   } catch (error) {
-    setLoading(false);
-    //toastErrorNotify(error.message);
+    dispatch(clearLoading());
+    toastErrorNotify(error.message);
   }
 };
 
-export const signIn = async (values, navigate, setLoading) => {
+export const signIn = async (values, navigate, dispatch, clearLoading) => {
   const { email, password } = values;
   try {
     await signInWithEmailAndPassword(auth, email, password);
     navigate("/");
-    setLoading(false);
-    //toastSuccessNotify("Logged in successfully!");
+    dispatch(clearLoading());
+    toastSuccessNotify("Logged in successfully!");
   } catch (error) {
-    setLoading(false);
-    //toastErrorNotify(error.message);
+    dispatch(clearLoading());
+    toastErrorNotify(error.message);
   }
 };
 
-export const userObserver = (setCurrentUser) => {
+export const userObserver = (dispatch, createCurrentUser, clearCurrentUser) => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       const { email, displayName, photoURL } = user;
-      setCurrentUser({ email, displayName, photoURL });
+      dispatch(createCurrentUser({ email, displayName, photoURL }));
     } else {
-      setCurrentUser(false);
+      dispatch(clearCurrentUser());
     }
   });
 };
 
 export const logOut = () => {
   signOut(auth);
-  //toastSuccessNotify("Logged out successfully!");
+  toastSuccessNotify("Logged out successfully!");
 };
 
 export const signUpWithGoogle = (navigate) => {
@@ -91,44 +99,73 @@ export const signUpWithGoogle = (navigate) => {
   signInWithPopup(auth, provider)
     .then((result) => {
       navigate("/");
-      //toastSuccessNotify("Logged in successfully!");
+      toastSuccessNotify("Logged in successfully!");
     })
     .catch((error) => {
-      //toastErrorNotify(error.message);
+      toastErrorNotify(error.message);
     });
 };
 
-export const forgotPassword = ({ email }, setLoading) => {
+export const forgotPassword = ({ email }, dispatch, clearLoading) => {
   sendPasswordResetEmail(auth, email)
     .then(() => {
-      setLoading(false);
-      //toastWarnNotify("Please check your mail box!");
+      dispatch(clearLoading());
+      toastWarnNotify("Please check your mail box!");
     })
     .catch((err) => {
-      setLoading(false);
-      //toastErrorNotify(err.message);
+      dispatch(clearLoading());
+      toastErrorNotify(err.message);
     });
 };
 
 export const db = getFirestore(app);
 
-const shoppingRef = collection(db, "shopping");
-const currentRef = collection(db, "osman");
-
 export const shoppingListenerFirebase = (dispatch, shoppingListener) => {
+  const shoppingRef = collection(db, "shopping");
   onSnapshot(shoppingRef, (snapshot) => {
-    dispatch(
-      shoppingListener(
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      )
-    );
+    dispatch(shoppingListener(snapshot.docs.map((doc) => ({ ...doc.data() }))));
   });
 };
 
 export const newShopping = (values) => {
+  const ref = doc(db, "shopping", `${values.id}`);
   try {
-    addDoc(currentRef, { ...values });
+    setDoc(ref, { ...values, piece: 1, currentUserList: [] });
+    toastSuccessNotify("Added Successfully!");
   } catch (error) {
-    console.log(error);
+    toastErrorNotify(error.message);
+  }
+};
+export const deleteShopping = (id) => {
+  try {
+    deleteDoc(doc(db, "shopping", id.toString()));
+    toastErrorNotify("Deleted Successfully");
+  } catch (error) {
+    toastWarnNotify(error.message);
+  }
+};
+
+export const favoriteListenerFirebase = (dispatch, favoriteListener) => {
+  const favoriteRef = collection(db, "favorite");
+  onSnapshot(favoriteRef, (snapshot) => {
+    dispatch(favoriteListener(snapshot.docs.map((doc) => ({ ...doc.data() }))));
+  });
+};
+
+export const newFavorite = (values) => {
+  const ref = doc(db, "favorite", `${values.id}`);
+  try {
+    setDoc(ref, { ...values, piece: 1, currentUserList: [] });
+    toastSuccessNotify("Added Successfully!");
+  } catch (error) {
+    toastErrorNotify(error.message);
+  }
+};
+export const deleteFavorite = (id) => {
+  try {
+    deleteDoc(doc(db, "favorite", id.toString()));
+    toastErrorNotify("Deleted Successfully");
+  } catch (error) {
+    toastWarnNotify(error.message);
   }
 };
