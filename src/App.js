@@ -4,6 +4,8 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { deepOrange, grey } from "@mui/material/colors";
 import { Provider } from "react-redux";
 import store from "./app/store";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const theme = createTheme({
@@ -21,6 +23,7 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppRouter />
+        <ToastContainer />
       </ThemeProvider>
     </Provider>
   );
