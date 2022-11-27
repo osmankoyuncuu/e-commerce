@@ -8,33 +8,36 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Box from "@mui/material/Box";
 import "../App.css";
-import { useSelector, useDispatch } from "react-redux";
-import { addFavorite, deleteFavorite } from "../features/favoriteSlice";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addShopping, deleteShopping } from "../features/shoppingSlice";
+import {
+  deleteFavorite,
+  deleteShopping,
+  newFavorite,
+  newShopping,
+} from "../utils/firebase";
 
 const ProductCard = ({ product }) => {
   const { favoriteList } = useSelector((state) => state.favorite);
   const { shoppingList } = useSelector((state) => state.shopping);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { title, image, price, id, category } = product;
   const includes = (arr, val) => {
     return arr.some((arrVal) => val === arrVal.id);
   };
   const handleFavorite = (product) => {
     if (includes(favoriteList, id)) {
-      dispatch(deleteFavorite(product));
+      deleteFavorite(id);
     } else {
-      dispatch(addFavorite(product));
+      newFavorite(product);
     }
   };
 
   const handleShopping = (product) => {
     if (includes(shoppingList, id)) {
-      dispatch(deleteShopping(product));
+      deleteShopping(id);
     } else {
-      dispatch(addShopping(product));
+      newShopping(product);
     }
   };
 

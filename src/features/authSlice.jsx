@@ -9,7 +9,25 @@ const initialState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    createCurrentUser: (state, { payload }) => {
+      state.currentUser = payload;
+    },
+    clearCurrentUser: (state) => {
+      state.currentUser = null;
+    },
+    loadingTrue: (state) => {
+      state.loading = true;
+    },
+    clearLoading: (state) => {
+      state.loading = false;
+    },
+  },
 });
-
+export const {
+  createCurrentUser,
+  clearCurrentUser,
+  clearLoading,
+  loadingTrue,
+} = authSlice.actions;
 export default authSlice.reducer;

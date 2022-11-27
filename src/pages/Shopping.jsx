@@ -4,88 +4,110 @@ import { useSelector } from "react-redux";
 import Basket from "../component/Basket";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import { minHeight } from "../styles/globalStyle";
+import { useEffect } from "react";
+import { shoppingListenerFirebase } from "../utils/firebase";
+import { shoppingListener } from "../features/shoppingSlice";
+import { useDispatch } from "react-redux";
 
 const Shopping = () => {
   const { shoppingList } = useSelector((state) => state.shopping);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  useEffect(() => {
+    shoppingListenerFirebase(dispatch, shoppingListener);
+  }, []);
+
   return (
-    <Box sx={{ display: "flex", m: 2, gap: "3rem" }}>
+    <Box style={minHeight}>
       <Box
         sx={{
-          width: "70%",
           display: "flex",
-          flexDirection: "column",
-          gap: ".5rem",
+          padding: "2rem",
+          gap: "3rem",
         }}
       >
-        <Typography variant="h5" component="span" sx={{ paddingLeft: "1rem" }}>
-          My Cart <Typography component="span">(1 product)</Typography>
-        </Typography>
-        {shoppingList.map((item) => (
-          <Basket product={item} key={item?.id} />
-        ))}
-      </Box>
-      <Box
-        sx={{
-          border: "1px solid grey",
-          borderRadius: "0.5rem",
-          width: "25%",
-          height: "17rem",
-          position: "sticky",
-          top: "1rem",
-          padding: "1rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: ".4rem",
-        }}
-      >
-        <Typography variant="h6">SELECTED PRODUCT</Typography>
         <Box
           sx={{
+            width: "70%",
             display: "flex",
-            justifyContent: "space-between",
-            mt: 2,
+            flexDirection: "column",
+            gap: ".5rem",
           }}
         >
-          <Typography>Item(s) total</Typography>
-          <Typography>$ 299</Typography>
+          <Typography
+            variant="h5"
+            component="span"
+            sx={{ paddingLeft: "1rem" }}
+          >
+            My Cart <Typography component="span">(1 product)</Typography>
+          </Typography>
+          {shoppingList.map((item) => (
+            <Basket product={item} key={item?.id} />
+          ))}
         </Box>
         <Box
           sx={{
+            border: "1px solid grey",
+            borderRadius: "0.5rem",
+            width: "25%",
+            height: "17rem",
+            position: "sticky",
+            top: "1rem",
+            padding: "1rem",
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
+            gap: ".4rem",
           }}
         >
-          <Typography>Cargo</Typography>
-          <Typography>$ 15</Typography>
+          <Typography variant="h6">SELECTED PRODUCT</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mt: 2,
+            }}
+          >
+            <Typography>Item(s) total</Typography>
+            <Typography>$ 299</Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography>Cargo</Typography>
+            <Typography>$ 15</Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              borderBottom: "1px solid grey",
+            }}
+          >
+            <Typography>Shop discount</Typography>
+            <Typography>$ 15</Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              borderBottom: "1px solid grey",
+            }}
+          >
+            <Typography variant="h6">Total</Typography>
+            <Typography variant="h6">$ 300</Typography>
+          </Box>
+          <Button
+            variant="contained"
+            sx={{ mt: 1 }}
+            onClick={() => navigate("/pay")}
+          >
+            Complete your Shopping
+          </Button>
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            borderBottom: "1px solid grey",
-          }}
-        >
-          <Typography>Shop discount</Typography>
-          <Typography>$ 15</Typography>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            borderBottom: "1px solid grey",
-          }}
-        >
-          <Typography variant="h6">Total</Typography>
-          <Typography variant="h6">$ 300</Typography>
-        </Box>
-        <Button
-          variant="contained"
-          sx={{ mt: 1 }}
-          onClick={() => navigate("/pay")}
-        >
-          Complete your Shopping
-        </Button>
       </Box>
     </Box>
   );

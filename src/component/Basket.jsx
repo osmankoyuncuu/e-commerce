@@ -6,13 +6,11 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import IconButton from "@mui/material/IconButton";
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
-import { useDispatch } from "react-redux";
-import { deleteShopping } from "../features/shoppingSlice";
+import { deleteShopping } from "../utils/firebase";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 const Basket = ({ product }) => {
-  const dispatch = useDispatch();
   const { image, title, price, id } = product;
   const [piece, setPiece] = useState(1);
   const [itemTotal, setItemTotal] = useState(0);
@@ -21,12 +19,13 @@ const Basket = ({ product }) => {
     if (piece > 1) {
       setPiece(piece - 1);
     } else {
-      dispatch(deleteShopping(product));
+      deleteShopping(id);
     }
   };
 
-  const handleRemove = () => {
-    dispatch(deleteShopping(product));
+  const handleRemove = (id) => {
+    console.log(id.toString());
+    deleteShopping(id);
   };
   useEffect(() => {
     setItemTotal(price * piece);

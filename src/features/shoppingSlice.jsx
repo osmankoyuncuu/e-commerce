@@ -8,16 +8,10 @@ const shoppingSlice = createSlice({
   name: "shopping",
   initialState,
   reducers: {
-    addShopping: (state, { payload }) => {
-      state.shoppingList.push(payload);
-    },
-    deleteShopping: (state, { payload }) => {
-      const filtered = state.shoppingList?.filter(
-        (item) => item.id !== payload.id
-      );
-      state.shoppingList = filtered;
+    shoppingListener: (state, { payload }) => {
+      state.shoppingList = payload;
     },
   },
 });
-export const { addShopping, deleteShopping } = shoppingSlice.actions;
+export const { shoppingListener } = shoppingSlice.actions;
 export default shoppingSlice.reducer;
