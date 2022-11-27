@@ -36,6 +36,9 @@ const CategoryFilter = () => {
         justifyContent: "center",
         alignItems: "center",
         gap: "2rem",
+        position: "sticky",
+        top: "64px",
+        zIndex: "1",
       }}
     >
       {filterButtons.map((button) => {
