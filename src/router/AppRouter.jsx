@@ -9,6 +9,8 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import { useSelector } from "react-redux";
 import Profile from "../pages/Profile";
+import Footer from "../component/Footer";
+import PrivateRouter from "./PrivateRouter";
 
 const AppRouter = () => {
   const { currentUser } = useSelector((state) => state.auth);
@@ -19,12 +21,23 @@ const AppRouter = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="detail/:id" element={<Detail />} />
-        <Route path="favorite" element={<Favorite />} />
-        <Route path="shopping" element={<Shopping />} />
-        <Route path="/pay" element={<Pay />} />
+        <Route path="/profile" element={<PrivateRouter />}>
+          <Route path="" element={<Profile />} />
+        </Route>
+        <Route path="detail/:id" element={<PrivateRouter />}>
+          <Route path="" element={<Detail />} />
+        </Route>
+        <Route path="/favorite" element={<PrivateRouter />}>
+          <Route path="" element={<Favorite />} />
+        </Route>
+        <Route path="/shopping" element={<PrivateRouter />}>
+          <Route path="" element={<Shopping />} />
+        </Route>
+        <Route path="/pay" element={<PrivateRouter />}>
+          <Route path="" element={<Pay />} />
+        </Route>
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 };
