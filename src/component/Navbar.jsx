@@ -13,11 +13,12 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { logOut } from "../utils/firebase";
+import { favoriteListenerFirebase, logOut } from "../utils/firebase";
+import { favoriteListener } from "../features/favoriteSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",

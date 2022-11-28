@@ -17,14 +17,16 @@ import { minHeight } from "../styles/globalStyle";
 import { favoriteListener } from "../features/favoriteSlice";
 
 const Home = () => {
-  const { filterProductList, currentUser } = useSelector(
-    (state) => state.product
-  );
+  const { filterProductList } = useSelector((state) => state.product);
+  const { currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const { favoriteList } = useSelector((state) => state.favorite);
+  console.log(currentUser);
+  console.log(favoriteList);
   useEffect(() => {
     userObserver(dispatch, createCurrentUser, clearCurrentUser);
-    shoppingListenerFirebase(dispatch, shoppingListener);
-    favoriteListenerFirebase(dispatch, favoriteListener);
+    favoriteListenerFirebase(dispatch, favoriteListener, currentUser);
+    shoppingListenerFirebase(dispatch, shoppingListener, currentUser);
     dispatch(getProduct());
   }, []);
 

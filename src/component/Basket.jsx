@@ -19,13 +19,13 @@ const Basket = ({ product }) => {
     if (piece > 1) {
       setPiece(piece - 1);
     } else {
-      deleteShopping(id);
+      //deleteShopping(id);
     }
   };
 
   const handleRemove = (id) => {
     console.log(id.toString());
-    deleteShopping(id);
+    //deleteShopping(id);
   };
   useEffect(() => {
     setItemTotal(price * piece);

@@ -7,13 +7,15 @@ import Detail from "../pages/Detail";
 import Pay from "../pages/Pay";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Profile from "../pages/Profile";
 import Footer from "../component/Footer";
 import PrivateRouter from "./PrivateRouter";
+import { useEffect } from "react";
+import { userObserver } from "../utils/firebase";
+import { clearCurrentUser, createCurrentUser } from "../features/authSlice";
 
 const AppRouter = () => {
-  const { currentUser } = useSelector((state) => state.auth);
   return (
     <BrowserRouter>
       {true && <Navbar />}
