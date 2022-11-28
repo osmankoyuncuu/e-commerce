@@ -7,12 +7,12 @@ import Rating from "@mui/material/Rating";
 import Button from "@mui/material/Button";
 import OtherProductCard from "../component/OtherProductCard";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteFavorite,
-  deleteShopping,
-  newFavorite,
-  newShopping,
-} from "../utils/firebase";
+//import {
+//  deleteFavorite,
+//  deleteShopping,
+//  newFavorite,
+//  newShopping,
+//} from "../utils/firebase";
 
 const Detail = () => {
   const { id } = useParams();
@@ -40,17 +40,17 @@ const Detail = () => {
 
   const handleFavorite = (product) => {
     if (favoriteList?.some((item) => item.id == id)) {
-      deleteFavorite(id);
+      //deleteFavorite(id);
     } else {
-      newFavorite(product);
+      //newFavorite(product);
     }
   };
 
   const handleShopping = (product) => {
     if (shoppingList?.some((item) => item.id == id)) {
-      deleteShopping(id);
+      //deleteShopping(id);
     } else {
-      newShopping(product);
+      //newShopping(product);
     }
   };
 

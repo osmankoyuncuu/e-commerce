@@ -22,6 +22,7 @@ import {
   disableNetwork,
   setDoc,
 } from "firebase/firestore";
+import { useEffect } from "react";
 
 import {
   toastErrorNotify,
@@ -117,9 +118,9 @@ export const forgotPassword = ({ email }, dispatch, clearLoading) => {
       toastErrorNotify(err.message);
     });
 };
-
+//?---------------------FIRESTORE-------------
 export const db = getFirestore(app);
-
+//!---------------------SHOPPING--------------
 export const shoppingListenerFirebase = (dispatch, shoppingListener) => {
   const shoppingRef = collection(db, "shopping");
   onSnapshot(shoppingRef, (snapshot) => {
@@ -127,45 +128,113 @@ export const shoppingListenerFirebase = (dispatch, shoppingListener) => {
   });
 };
 
-export const newShopping = (values) => {
-  const ref = doc(db, "shopping", `${values.id}`);
+export const newBasket = (values, currentUser) => {
+  const ref = doc(db, "basket", `${values.id}`);
   try {
-    setDoc(ref, { ...values, piece: 1, currentUserList: [] });
+    setDoc(ref, { ...values, piece: 1, currentUserList: [currentUser.email] });
     toastSuccessNotify("Added Successfully!");
   } catch (error) {
     toastErrorNotify(error.message);
   }
 };
-export const deleteShopping = (id) => {
+
+export const addBasket = (filterId, currentUser) => {
+  const currentPushList = [...filterId[0].currentUserList];
+  currentPushList.push(currentUser.email);
+  const values = {
+    ...filterId[0],
+    currentUserList: currentPushList,
+  };
   try {
-    deleteDoc(doc(db, "shopping", id.toString()));
-    toastErrorNotify("Deleted Successfully");
+    const docRef = doc(db, "basket", values.id.toString());
+    updateDoc(docRef, values);
+    toastSuccessNotify("Updated Successfully!");
   } catch (error) {
-    toastWarnNotify(error.message);
+    toastErrorNotify(error.message);
   }
 };
 
-export const favoriteListenerFirebase = (dispatch, favoriteListener) => {
+export const noneBasket = (filterId, currentUser) => {
+  const currentPushList = [...filterId[0].currentUserList];
+  const index = currentPushList.indexOf(currentUser?.email);
+  currentPushList?.splice(index, 1);
+  const values = {
+    ...filterId[0],
+    currentUserList: currentPushList,
+  };
+  try {
+    const docRef = doc(db, "favorite", values.id.toString());
+    updateDoc(docRef, values);
+    toastSuccessNotify("Updated Successfully!");
+  } catch (error) {
+    toastErrorNotify(error.message);
+  }
+};
+//export const deleteShopping = (id) => {
+//  try {
+//    deleteDoc(doc(db, "shopping", id.toString()));
+//    toastErrorNotify("Deleted Successfully");
+//  } catch (error) {
+//    toastWarnNotify(error.message);
+//  }
+//};
+//!--------------FAVORİTE--------------------
+export const favoriteListenerFirebase = (
+  dispatch,
+  favoriteListener,
+  currentUser
+) => {
   const favoriteRef = collection(db, "favorite");
   onSnapshot(favoriteRef, (snapshot) => {
-    dispatch(favoriteListener(snapshot.docs.map((doc) => ({ ...doc.data() }))));
+    dispatch(
+      favoriteListener(
+        snapshot.docs
+          .map((doc) => ({ ...doc.data() }))
+          .filter((item) => item?.currentUserList.includes(currentUser?.email))
+      )
+    );
   });
 };
 
-export const newFavorite = (values) => {
+export const newFavorite = (values, currentUser) => {
   const ref = doc(db, "favorite", `${values.id}`);
   try {
-    setDoc(ref, { ...values, piece: 1, currentUserList: [] });
+    setDoc(ref, { ...values, piece: 1, currentUserList: [currentUser.email] });
     toastSuccessNotify("Added Successfully!");
   } catch (error) {
     toastErrorNotify(error.message);
   }
 };
-export const deleteFavorite = (id) => {
+
+export const addFavorite = (filterId, currentUser) => {
+  const currentPushList = [...filterId[0].currentUserList];
+  currentPushList.push(currentUser.email);
+  const values = {
+    ...filterId[0],
+    currentUserList: currentPushList,
+  };
   try {
-    deleteDoc(doc(db, "favorite", id.toString()));
-    toastErrorNotify("Deleted Successfully");
+    const docRef = doc(db, "favorite", values.id.toString());
+    updateDoc(docRef, values);
+    toastSuccessNotify("Updated Successfully!");
   } catch (error) {
-    toastWarnNotify(error.message);
+    toastErrorNotify(error.message);
+  }
+};
+
+export const noneFavorite = (filterId, currentUser) => {
+  const currentPushList = [...filterId[0].currentUserList];
+  const index = currentPushList.indexOf(currentUser?.email);
+  currentPushList?.splice(index, 1);
+  const values = {
+    ...filterId[0],
+    currentUserList: currentPushList,
+  };
+  try {
+    const docRef = doc(db, "favorite", values.id.toString());
+    updateDoc(docRef, values);
+    toastSuccessNotify("Updated Successfully!");
+  } catch (error) {
+    toastErrorNotify(error.message);
   }
 };

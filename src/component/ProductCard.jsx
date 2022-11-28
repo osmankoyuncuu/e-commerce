@@ -11,33 +11,49 @@ import "../App.css";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
-  deleteFavorite,
+  addBasket,
+  addFavorite,
   deleteShopping,
+  newBasket,
   newFavorite,
   newShopping,
+  noneBasket,
+  noneFavorite,
 } from "../utils/firebase";
 
 const ProductCard = ({ product }) => {
   const { favoriteList } = useSelector((state) => state.favorite);
   const { shoppingList } = useSelector((state) => state.shopping);
+  const { currentUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { title, image, price, id, category } = product;
-  const includes = (arr, val) => {
-    return arr.some((arrVal) => val === arrVal.id);
+
+  const includes = (arr, val, key) => {
+    return arr.some((arrVal) => val === arrVal[key]);
   };
   const handleFavorite = (product) => {
-    if (includes(favoriteList, id)) {
-      deleteFavorite(id);
+    if (includes(favoriteList, id, "id")) {
+      const filterId = favoriteList.filter((item) => id == item.id);
+      if (filterId[0].currentUserList?.includes(currentUser.email)) {
+        noneFavorite(filterId, currentUser);
+      } else {
+        addFavorite(filterId, currentUser);
+      }
     } else {
-      newFavorite(product);
+      newFavorite(product, currentUser);
     }
   };
 
   const handleShopping = (product) => {
-    if (includes(shoppingList, id)) {
-      deleteShopping(id);
+    if (includes(shoppingList, id, "id")) {
+      const filterId = shoppingList.filter((item) => id == item.id);
+      if (filterId[0].currentUserList?.includes(currentUser.email)) {
+        noneBasket(filterId, currentUser);
+      } else {
+        addBasket(filterId, currentUser);
+      }
     } else {
-      newShopping(product);
+      newBasket(product, currentUser);
     }
   };
 

@@ -1,8 +1,14 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import ProductCard from "../component/ProductCard";
 import { minHeight } from "../styles/globalStyle";
+import {
+  favoriteCurrentUserFilter,
+  favoriteListener,
+} from "../features/favoriteSlice";
+import { useEffect, useState } from "react";
+import { favoriteListenerFirebase } from "../utils/firebase";
 
 const Favorite = () => {
   const { favoriteList } = useSelector((state) => state.favorite);
