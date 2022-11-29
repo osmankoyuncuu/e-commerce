@@ -3,9 +3,10 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { deepOrange, grey } from "@mui/material/colors";
 import { Provider } from "react-redux";
-import store from "./app/store";
+import store, { persistor } from "./app/store";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { PersistGate } from "redux-persist/integration/react";
 
 const App = () => {
   const theme = createTheme({
@@ -20,11 +21,13 @@ const App = () => {
   });
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppRouter />
-        <ToastContainer />
-      </ThemeProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppRouter />
+          <ToastContainer />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   );
 };
