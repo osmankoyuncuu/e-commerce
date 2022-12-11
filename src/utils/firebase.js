@@ -1,3 +1,4 @@
+import { List } from "@mui/material";
 import { initializeApp } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
@@ -122,7 +123,7 @@ export const forgotPassword = ({ email }, dispatch, clearLoading) => {
 export const db = getFirestore(app);
 //!---------------------SHOPPING--------------
 export const shoppingListenerFirebase = (dispatch, shoppingListener) => {
-  const shoppingRef = collection(db, "shopping");
+  const shoppingRef = collection(db, "basket");
   onSnapshot(shoppingRef, (snapshot) => {
     dispatch(shoppingListener(snapshot.docs.map((doc) => ({ ...doc.data() }))));
   });
@@ -131,7 +132,11 @@ export const shoppingListenerFirebase = (dispatch, shoppingListener) => {
 export const newBasket = (values, currentUser) => {
   const ref = doc(db, "basket", `${values.id}`);
   try {
-    setDoc(ref, { ...values, piece: 1, currentUserList: [currentUser.email] });
+    setDoc(ref, {
+      ...values,
+      currentShoppingList: [{ currentUser: currentUser.email, piece: 1 }],
+      currentUserList: [currentUser.email],
+    });
     toastSuccessNotify("Added Successfully!");
   } catch (error) {
     toastErrorNotify(error.message);
@@ -141,9 +146,16 @@ export const newBasket = (values, currentUser) => {
 export const addBasket = (filterId, currentUser) => {
   const currentPushList = [...filterId[0].currentUserList];
   currentPushList.push(currentUser.email);
+  const currentShopping = [...filterId[0].currentShoppingList];
+  currentShopping.push({
+    currentUser: currentUser.email,
+    piece: 1,
+  });
+
   const values = {
     ...filterId[0],
     currentUserList: currentPushList,
+    currentShoppingList: currentShopping,
   };
   try {
     const docRef = doc(db, "basket", values.id.toString());
@@ -158,18 +170,46 @@ export const noneBasket = (filterId, currentUser) => {
   const currentPushList = [...filterId[0].currentUserList];
   const index = currentPushList.indexOf(currentUser?.email);
   currentPushList?.splice(index, 1);
+
+  const currentShopping = [...filterId[0].currentShoppingList];
+  const filterCurrentShopping = currentShopping.filter(
+    (item) => item?.currentUser !== currentUser?.email
+  );
+
   const values = {
     ...filterId[0],
     currentUserList: currentPushList,
+    currentShoppingList: filterCurrentShopping,
   };
   try {
-    const docRef = doc(db, "favorite", values.id.toString());
+    const docRef = doc(db, "basket", values.id.toString());
     updateDoc(docRef, values);
     toastSuccessNotify("Updated Successfully!");
   } catch (error) {
     toastErrorNotify(error.message);
   }
 };
+
+export const updatePieceBasket = (product, currentUser, piece) => {
+  const newFilter = product?.currentShoppingList.filter(
+    (item) => item?.currentUser !== currentUser.email
+  );
+  const values = {
+    ...product,
+    currentShoppingList: [
+      ...newFilter,
+      { currentUser: currentUser?.email, piece },
+    ],
+  };
+  try {
+    const docRef = doc(db, "basket", values.id.toString());
+    updateDoc(docRef, values);
+    toastSuccessNotify("Updated Successfully!");
+  } catch (error) {
+    toastErrorNotify(error.message);
+  }
+};
+
 //export const deleteShopping = (id) => {
 //  try {
 //    deleteDoc(doc(db, "shopping", id.toString()));
@@ -179,20 +219,10 @@ export const noneBasket = (filterId, currentUser) => {
 //  }
 //};
 //!--------------FAVORİTE--------------------
-export const favoriteListenerFirebase = (
-  dispatch,
-  favoriteListener,
-  currentUser
-) => {
+export const favoriteListenerFirebase = (dispatch, favoriteListener) => {
   const favoriteRef = collection(db, "favorite");
   onSnapshot(favoriteRef, (snapshot) => {
-    dispatch(
-      favoriteListener(
-        snapshot.docs
-          .map((doc) => ({ ...doc.data() }))
-          .filter((item) => item?.currentUserList.includes(currentUser?.email))
-      )
-    );
+    dispatch(favoriteListener(snapshot.docs.map((doc) => ({ ...doc.data() }))));
   });
 };
 

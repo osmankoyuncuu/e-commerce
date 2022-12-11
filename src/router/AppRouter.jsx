@@ -14,8 +14,47 @@ import PrivateRouter from "./PrivateRouter";
 import { useEffect } from "react";
 import { userObserver } from "../utils/firebase";
 import { clearCurrentUser, createCurrentUser } from "../features/authSlice";
+import {
+  favoriteListenerFirebase,
+  shoppingListenerFirebase,
+} from "../utils/firebase";
+import { filterShopping, shoppingListener } from "../features/shoppingSlice";
+import { favoriteListener } from "../features/favoriteSlice";
+import { getProduct } from "../features/productSlice";
+import { filterFavorite } from "../features/favoriteSlice";
 
 const AppRouter = () => {
+  const dispatch = useDispatch();
+  const { favoriteList } = useSelector((state) => state.favorite);
+  const { currentUser } = useSelector((state) => state.auth);
+  const { shoppingList } = useSelector((state) => state.shopping);
+  useEffect(() => {
+    userObserver(dispatch, createCurrentUser, clearCurrentUser);
+    favoriteListenerFirebase(dispatch, favoriteListener);
+    shoppingListenerFirebase(dispatch, shoppingListener);
+    dispatch(getProduct());
+  }, []);
+
+  useEffect(() => {
+    dispatch(
+      filterFavorite(
+        favoriteList.filter((item) =>
+          item?.currentUserList.includes(currentUser?.email)
+        )
+      )
+    );
+  }, [favoriteList]);
+
+  useEffect(() => {
+    dispatch(
+      filterShopping(
+        shoppingList.filter((item) =>
+          item?.currentUserList.includes(currentUser?.email)
+        )
+      )
+    );
+  }, [shoppingList]);
+
   return (
     <BrowserRouter>
       {true && <Navbar />}
