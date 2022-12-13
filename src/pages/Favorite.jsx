@@ -3,15 +3,25 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import ProductCard from "../component/ProductCard";
 import { minHeight } from "../styles/globalStyle";
-import {
-  favoriteCurrentUserFilter,
-  favoriteListener,
-} from "../features/favoriteSlice";
-import { useEffect, useState } from "react";
-import { favoriteListenerFirebase } from "../utils/firebase";
+import { useEffect } from "react";
+import { filterFavorite } from "../features/favoriteSlice";
 
 const Favorite = () => {
-  const { favoriteList } = useSelector((state) => state.favorite);
+  const { favoriteList, filterFavoriteList } = useSelector(
+    (state) => state.favorite
+  );
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(
+      filterFavorite(
+        favoriteList.filter((item) =>
+          item?.currentUserList.includes(currentUser?.email)
+        )
+      )
+    );
+  }, [favoriteList]);
 
   return (
     <Box style={minHeight}>
@@ -23,7 +33,7 @@ const Favorite = () => {
         }}
       >
         <Grid container justifyContent="center" spacing={4} sx={{ m: 1 }}>
-          {favoriteList?.map((favorite) => (
+          {filterFavoriteList?.map((favorite) => (
             <Grid item key={favorite?.id}>
               <ProductCard product={favorite} />
             </Grid>

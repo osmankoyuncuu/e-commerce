@@ -7,6 +7,15 @@ import Rating from "@mui/material/Rating";
 import Button from "@mui/material/Button";
 import OtherProductCard from "../component/OtherProductCard";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  addBasket,
+  addFavorite,
+  newBasket,
+  newFavorite,
+  noneBasket,
+  noneFavorite,
+} from "../utils/firebase";
+import { lightGreen } from "@mui/material/colors";
 //import {
 //  deleteFavorite,
 //  deleteShopping,
@@ -22,6 +31,7 @@ const Detail = () => {
   const { productList } = useSelector((state) => state.product);
   const { favoriteList } = useSelector((state) => state.favorite);
   const { shoppingList } = useSelector((state) => state.shopping);
+  const { currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const getDetail = async (id) => {
@@ -38,19 +48,33 @@ const Detail = () => {
     setOtherCard(otherFilter);
   };
 
+  const includes = (arr, val, key) => {
+    return arr.some((arrVal) => Number(val) === arrVal[key]);
+  };
+
   const handleFavorite = (product) => {
-    if (favoriteList?.some((item) => item.id == id)) {
-      //deleteFavorite(id);
+    if (includes(favoriteList, id, "id")) {
+      const filterId = favoriteList.filter((item) => id == item.id);
+      if (filterId[0].currentUserList?.includes(currentUser.email)) {
+        noneFavorite(filterId, currentUser);
+      } else {
+        addFavorite(filterId, currentUser);
+      }
     } else {
-      //newFavorite(product);
+      newFavorite(product, currentUser);
     }
   };
 
   const handleShopping = (product) => {
-    if (shoppingList?.some((item) => item.id == id)) {
-      //deleteShopping(id);
+    if (includes(shoppingList, id, "id")) {
+      const filterId = shoppingList.filter((item) => id == item.id);
+      if (filterId[0].currentUserList?.includes(currentUser.email)) {
+        noneBasket(filterId, currentUser);
+      } else {
+        addBasket(filterId, currentUser);
+      }
     } else {
-      //newShopping(product);
+      newBasket(product, currentUser);
     }
   };
 

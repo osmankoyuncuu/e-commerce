@@ -1,22 +1,34 @@
 import { Typography } from "@mui/material";
 import Box from "@mui/system/Box";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Basket from "../component/Basket";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { minHeight } from "../styles/globalStyle";
-import { useEffect } from "react";
-import { shoppingListenerFirebase } from "../utils/firebase";
-import { shoppingListener } from "../features/shoppingSlice";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { filterShopping } from "../features/shoppingSlice";
 
 const Shopping = () => {
-  const { shoppingList } = useSelector((state) => state.shopping);
+  const { shoppingList, filterShoppingList, total } = useSelector(
+    (state) => state.shopping
+  );
+  const { currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  console.log(filterShoppingList);
+  const newShopping = filterShoppingList.map(
+    (item) => item?.currentShoppingList
+  );
+  console.log(newShopping);
   useEffect(() => {
-    shoppingListenerFirebase(dispatch, shoppingListener);
-  }, []);
+    dispatch(
+      filterShopping(
+        shoppingList.filter((item) =>
+          item?.currentUserList.includes(currentUser?.email)
+        )
+      )
+    );
+  }, [shoppingList]);
 
   return (
     <Box style={minHeight}>
@@ -42,7 +54,7 @@ const Shopping = () => {
           >
             My Cart <Typography component="span">(1 product)</Typography>
           </Typography>
-          {shoppingList.map((item) => (
+          {filterShoppingList.map((item) => (
             <Basket product={item} key={item?.id} />
           ))}
         </Box>
@@ -53,7 +65,7 @@ const Shopping = () => {
             width: "25%",
             height: "17rem",
             position: "sticky",
-            top: "1rem",
+            top: "6rem",
             padding: "1rem",
             display: "flex",
             flexDirection: "column",

@@ -204,7 +204,6 @@ export const updatePieceBasket = (product, currentUser, piece) => {
   try {
     const docRef = doc(db, "basket", values.id.toString());
     updateDoc(docRef, values);
-    toastSuccessNotify("Updated Successfully!");
   } catch (error) {
     toastErrorNotify(error.message);
   }
