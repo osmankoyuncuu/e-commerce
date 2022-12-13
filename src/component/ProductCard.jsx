@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import {
   addBasket,
   addFavorite,
-  deleteShopping,
   newBasket,
   newFavorite,
   newShopping,
@@ -29,7 +28,7 @@ const ProductCard = ({ product }) => {
   const { title, image, price, id, category } = product;
 
   const includes = (arr, val, key) => {
-    return arr.some((arrVal) => val === arrVal[key]);
+    return arr?.some((arrVal) => val === arrVal[key]);
   };
   const handleFavorite = (product) => {
     if (includes(favoriteList, id, "id")) {
@@ -47,6 +46,7 @@ const ProductCard = ({ product }) => {
   const handleShopping = (product) => {
     if (includes(shoppingList, id, "id")) {
       const filterId = shoppingList.filter((item) => id == item.id);
+      console.log(filterId);
       if (filterId[0].currentUserList?.includes(currentUser.email)) {
         noneBasket(filterId, currentUser);
       } else {
