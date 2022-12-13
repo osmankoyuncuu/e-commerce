@@ -4,20 +4,24 @@ import Checkbox from "@mui/material/Checkbox";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import IconButton from "@mui/material/IconButton";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
-import { deleteShopping } from "../utils/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePieceBasket } from "../utils/firebase";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 const Basket = ({ product }) => {
-  const { image, title, price, id } = product;
-  const [piece, setPiece] = useState(1);
+  const { image, title, price, id, currentShoppingList } = product;
+  const { currentUser } = useSelector((state) => state.auth);
+  const newCurrentShoppingList = currentShoppingList.filter(
+    (item) => item?.currentUser == currentUser.email
+  );
+  const [piece, setPiece] = useState(newCurrentShoppingList[0]?.piece);
   const [itemTotal, setItemTotal] = useState(0);
-
   const handlePieceMinus = () => {
     if (piece > 1) {
-      setPiece(piece - 1);
+      setPiece((prevState) => prevState - 1);
     } else {
       //deleteShopping(id);
     }
@@ -29,6 +33,7 @@ const Basket = ({ product }) => {
   };
   useEffect(() => {
     setItemTotal(price * piece);
+    updatePieceBasket(product, currentUser, piece);
   }, [piece]);
 
   return (
@@ -75,7 +80,9 @@ const Basket = ({ product }) => {
             "&:hover": { color: "primary.main" },
             transition: "all .2s",
           }}
-          onClick={() => setPiece(piece + 1)}
+          onClick={() => {
+            setPiece((prev) => prev + 1);
+          }}
         >
           <AddCircleOutlineIcon />
         </IconButton>

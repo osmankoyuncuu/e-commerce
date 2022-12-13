@@ -18,7 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { favoriteListenerFirebase, logOut } from "../utils/firebase";
-import { favoriteListener } from "../features/favoriteSlice";
+import { clearFavorite, favoriteListener } from "../features/favoriteSlice";
+import { clearShopping } from "../features/shoppingSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -64,10 +65,11 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const { favoriteList } = useSelector((state) => state.favorite);
-  const { shoppingList } = useSelector((state) => state.shopping);
+  const { filterFavoriteList } = useSelector((state) => state.favorite);
+  const { filterShoppingList } = useSelector((state) => state.shopping);
   const { currentUser } = useSelector((state) => state.auth);
 
   const handleProfileMenuOpen = (event) => {
@@ -118,6 +120,8 @@ const Navbar = () => {
             onClick={() => {
               handleMenuClose();
               logOut();
+              dispatch(clearFavorite());
+              dispatch(clearShopping());
             }}
           >
             Logout
@@ -165,7 +169,7 @@ const Navbar = () => {
     >
       <MenuItem onClick={() => navigate("/shopping")}>
         <IconButton size="large" color="inherit">
-          <Badge badgeContent={shoppingList.length} color="error">
+          <Badge badgeContent={filterShoppingList.length} color="error">
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
@@ -173,7 +177,7 @@ const Navbar = () => {
       </MenuItem>
       <MenuItem onClick={() => navigate("/favorite")}>
         <IconButton size="large" color="inherit">
-          <Badge badgeContent={favoriteList.length} color="error">
+          <Badge badgeContent={filterFavoriteList.length} color="error">
             <FavoriteIcon />
           </Badge>
         </IconButton>
@@ -187,7 +191,13 @@ const Navbar = () => {
             </IconButton>
             <p>Profile</p>
           </MenuItem>
-          <MenuItem onClick={() => logOut()}>
+          <MenuItem
+            onClick={() => {
+              logOut();
+              dispatch(clearFavorite());
+              dispatch(clearShopping());
+            }}
+          >
             <IconButton size="large" color="inherit">
               <LogoutIcon />
             </IconButton>
@@ -258,7 +268,7 @@ const Navbar = () => {
               color="inherit"
               onClick={() => navigate("/favorite")}
             >
-              <Badge badgeContent={favoriteList.length} color="error">
+              <Badge badgeContent={filterFavoriteList.length} color="error">
                 <FavoriteIcon />
               </Badge>
             </IconButton>
@@ -267,7 +277,7 @@ const Navbar = () => {
               color="inherit"
               onClick={() => navigate("/shopping")}
             >
-              <Badge badgeContent={shoppingList.length} color="error">
+              <Badge badgeContent={filterShoppingList.length} color="error">
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
