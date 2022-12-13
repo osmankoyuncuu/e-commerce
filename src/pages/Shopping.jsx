@@ -19,7 +19,7 @@ const Shopping = () => {
   const newShopping = filterShoppingList.map(
     (item) => item?.currentShoppingList
   );
-  console.log(newShopping);
+  const newShpppingPiece = newShopping.filter((item)=>)
   useEffect(() => {
     dispatch(
       filterShopping(
